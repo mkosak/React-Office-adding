@@ -1,13 +1,12 @@
 import * as React from "react";
-import { Button, ButtonType } from "office-ui-fabric-react";
+import axios from "axios";
+import API from "./../utils/API";
+import { Button, ButtonType, Spinner, SpinnerType } from "office-ui-fabric-react";
 import Header from "./Header";
-import UserList, { UserListItem } from "./UserList";
+import UserList, { User, Post } from "./UserList";
 import Progress from "./Progress";
-// images references in the manifest
-import "../../../assets/icon-16.png";
-import "../../../assets/icon-32.png";
-import "../../../assets/icon-80.png";
-/* global Button, console, Excel, Header, UserList, UserListItem, Progress */
+
+/* global Button, console, Excel, Header, UserList, User, Progress */
 
 export interface AppProps {
   title: string;
@@ -15,34 +14,64 @@ export interface AppProps {
 }
 
 export interface AppState {
-  users: UserListItem[];
+  users: User[];
+  posts: Post[];
+  isLoading: boolean;
 }
 
 export default class App extends React.Component<AppProps, AppState> {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      users: []
+      users: [],
+      posts: [],
+      isLoading: true
     };
   }
 
   async componentDidMount() {
+    this.fetchData();
+  }
+
+  async fetchData() {
+    const fetchUsers = API.get('/users');
+    const fetchPosts = API.get('/posts');
+
+    axios.all([fetchUsers, fetchPosts]).then((responses) => {
+      const users = responses[0].data;
+      const posts = responses[1].data;
+
+      // use/access the results 
+      this.setState({ users: users });
+      this.setState({ posts: posts });
+
+      // stop loading
+      setTimeout(() => {
+        this.setState({ isLoading: false });
+      }, 2500);
+    }).catch(errors => {
+      // react on errors.
+      console.log(errors);
+    });
+  }
+
+  getUsersKeys() {
+    const { users } = this.state;
+
+    if (!users && !users.length) return null;
+
+    return Object.keys(users[0]);
   }
 
   click = async () => {
     try {
       await Excel.run(async context => {
-        /**
-         * Insert your Excel code here
-         */
-        const range = context.workbook.getSelectedRange();
-        
-        // Read the range address
-        range.load("address");
+        const selected = context.workbook.getSelectedRange();
+        selected.load(["address"]);
 
         await context.sync();
 
-        console.log(`The range address was ${range.address}.`);
+        console.log(selected.address);
       });
     } catch (error) {
       console.error(error);
@@ -51,6 +80,7 @@ export default class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { title, isOfficeInitialized } = this.props;
+    const { users, posts, isLoading } = this.state;
 
     if (!isOfficeInitialized) {
       return (
@@ -60,17 +90,20 @@ export default class App extends React.Component<AppProps, AppState> {
 
     return (
       <div className="ms-welcome">
-        <Header logo="assets/logo-filled.png" title={this.props.title} message="Welcome" />
-        <UserList items={this.state.users}>
-          <Button
-            className="ms-welcome__action"
-            buttonType={ButtonType.hero}
-            iconProps={{ iconName: "ChevronRight" }}
-            onClick={this.click}
-          >
-            Run
-          </Button>
-        </UserList>
+        <Header title={this.props.title} />
+        {isLoading && (<Spinner type={SpinnerType.large} label="Loading..." />)}
+        {!isLoading && (
+          <UserList users={users} posts={posts}>
+            <Button
+              className="ms-welcome__action"
+              buttonType={ButtonType.hero}
+              iconProps={{ iconName: "ChevronRight" }}
+              onClick={this.click}
+            >
+              Run
+            </Button>
+          </UserList>
+        )}
       </div>
     );
   }
