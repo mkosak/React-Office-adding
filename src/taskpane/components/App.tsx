@@ -9,7 +9,7 @@ import { UserList, User, Post } from "./UserList";
 import { SidePanel } from "./SidePanel";
 import Progress from "./Progress";
 
-import './styles/app.css';
+import './../styles/app.css';
 
 /* global Button, console, Excel, Header, UserList, User, Progress */
 
@@ -54,7 +54,7 @@ export default class App extends React.Component<AppProps, AppState> {
       setTimeout(() => {
         // stop loading
         this.setState({ isLoading: false });
-      }, 22500); // this is a magic number yes :), please reade above
+      }, 2500); // this is a magic number yes :), please reade above
 
     }).catch(errors => {
       // show on errors.
