@@ -35,7 +35,7 @@ export interface UserListProps {
   posts: Post[];
 }
 
-export default function UserList(props: UserListProps) {  
+export const UserList = (props: UserListProps) => {
   const { users, posts } = props;
   const [ postsToRender, setPostsToRender ] = useState([]);
   const [ message, setMessage ] = useState('');
@@ -108,9 +108,9 @@ export default function UserList(props: UserListProps) {
           tableRange.values = posts;
 
           // Create a table from the range.
-          let exampleTable = sheet.tables.add(tableRange, true);
+          let userPostsTable = sheet.tables.add(tableRange, true);
 
-          exampleTable.name = "ExpensesTable";
+          userPostsTable.name = "PostsTable";
         }
 
         await context.sync();

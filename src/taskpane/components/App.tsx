@@ -1,9 +1,11 @@
 import * as React from "react";
+
 import axios from "axios";
 import API from "./../utils/API";
+
 import { Spinner, SpinnerType } from "office-ui-fabric-react";
-import Header from "./Header";
-import UserList, { User, Post } from "./UserList";
+import { MainHeader } from "./MainHeader";
+import { UserList, User, Post } from "./UserList";
 import Progress from "./Progress";
 
 /* global Button, console, Excel, Header, UserList, User, Progress */
@@ -46,11 +48,9 @@ export default class App extends React.Component<AppProps, AppState> {
       this.setState({ posts: posts });
 
       // stop loading
-      setTimeout(() => {
-        this.setState({ isLoading: false });
-      }, 500);
+      this.setState({ isLoading: false });
     }).catch(errors => {
-      // react on errors.
+      // show on errors.
       console.log(errors);
     });
   }
@@ -67,7 +67,7 @@ export default class App extends React.Component<AppProps, AppState> {
 
     return (
       <section>
-        <Header title={this.props.title} />
+        <MainHeader title={this.props.title} />
         
         {isLoading && (<Spinner type={SpinnerType.large} label="Loading..." />)}
 
