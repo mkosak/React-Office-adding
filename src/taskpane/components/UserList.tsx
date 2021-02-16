@@ -1,4 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
+import { useState } from 'react';
+import { Button, ButtonType } from "office-ui-fabric-react";
 
 export interface Post {
   userId: number;
@@ -19,13 +21,14 @@ export interface User {
 }
 
 export interface UserListProps {
-  children: any;
   users: User[];
   posts: Post[];
 }
 
 export default function UserList(props: UserListProps) {  
-  const { children, users, posts } = props;
+  const { users, posts } = props;
+  const [ postsToRender, setPostsToRender ] = useState([]);
+  const [ message, setMessage ] = useState('');
 
   const getUserPosts = (userId: number): Post[] => {    
     return posts.filter((post) => post.userId === userId);
@@ -33,25 +36,93 @@ export default function UserList(props: UserListProps) {
   
   const listPosts = (userId: number) => { 
     return getUserPosts(userId).map((item, index) => (
-      <li className="ms-ListItem" key={index}>
-        <i className={`ms-Icon ms-Icon--${item.id}`}></i>
-        <span className="ms-font-m ms-fontColor-neutralPrimary">{item.title}</span>
+      <li key={index}>
+        <span>{item.title}</span>
       </li>
     ));
   };
 
   const listUsers = users.map((item, index) => (
-    <li className="ms-ListItem" key={index}>
-      <i className={`ms-Icon ms-Icon--${item.id}`}></i>
-      <span className="ms-font-m ms-fontColor-neutralPrimary">{item.name}</span>
-      <ul className="ms-List ms-welcome__features ms-u-slideUpIn10">{listPosts(item.id)}</ul>
+    <li key={index}>
+      <span onClick={() => activeUser(item.id)}>{item.name}</span>
+      <ul>{listPosts(item.id)}</ul>
     </li>
   ));
 
+  const activeUser = (userId: number) => {
+    setPostsToRender(getUserPosts(userId));
+  };
+
+  const getPostKeys = () => {
+    const { posts } = props;
+
+    if (!posts && !posts.length) return null;
+
+    return Object.keys(posts[0]);
+  }
+
+  const play = async () => {
+    try {
+      await Excel.run(async context => {
+        const selected = context.workbook.getSelectedRange();
+
+        // get selected cell indexes
+        selected.load(['rowIndex', 'columnIndex']);
+
+        await context.sync();
+
+        // console.log('rowIndex', selected.rowIndex, 'columnIndex', selected.columnIndex);
+        // console.log('getPostKeys', getPostKeys());
+        // console.log('getPostKeys length', getPostKeys().length);
+        // console.log('postsToRender length', postsToRender.length);
+
+        if (postsToRender.length <= 0) {
+          setMessage('Please select user first');
+        } else {
+          let posts = postsToRender.map(Object.values);
+          posts.unshift(getPostKeys());
+          // console.log('posts');
+          // console.log(posts);
+          // const values = [].push(posts);
+
+          // console.log('values');
+          // console.log(values);
+
+          // Get active sheet.
+          let sheet = context.workbook.worksheets.getActiveWorksheet();
+
+          // Get Range object that encompasses table data.
+          let tableRange = sheet.getCell(selected.rowIndex, selected.columnIndex).getResizedRange(posts.length - 1, getPostKeys().length - 1);
+
+          // Write values to the range.
+          tableRange.values = posts;
+
+          // Create a table from the range.
+          let exampleTable = sheet.tables.add(tableRange, true);
+
+          exampleTable.name = "ExpensesTable";
+        }
+
+        await context.sync();
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <main className="ms-welcome__main">
-      <ul className="ms-List ms-welcome__features ms-u-slideUpIn10">{listUsers}</ul>
-      {children}
+    <main>
+      {message}
+
+      <Button
+        buttonType={ButtonType.hero}
+        iconProps={{ iconName: "ChevronRight" }}
+        onClick={play}
+      >
+        Play
+      </Button>
+      
+      <ul>{listUsers}</ul>
     </main>
   );
 }
