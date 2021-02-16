@@ -1,6 +1,16 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Button, ButtonType } from "office-ui-fabric-react";
+import { MessageBar } from "office-ui-fabric-react";
+// import {
+//   MessageBarButton,
+//   Link,
+//   Stack,
+//   StackItem,
+//   MessageBar,
+//   MessageBarType,
+//   ChoiceGroup,
+//   IStackProps,
+// } from 'office-ui-fabric-react';
 
 export interface Post {
   userId: number;
@@ -112,15 +122,11 @@ export default function UserList(props: UserListProps) {
 
   return (
     <main>
-      {message}
+      <MessageBar>{message}</MessageBar>
 
-      <Button
-        buttonType={ButtonType.hero}
-        iconProps={{ iconName: "ChevronRight" }}
-        onClick={play}
-      >
+      <button onClick={play}>
         Play
-      </Button>
+      </button>
       
       <ul>{listUsers}</ul>
     </main>
