@@ -1,16 +1,9 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { MessageBar } from "office-ui-fabric-react";
-// import {
-//   MessageBarButton,
-//   Link,
-//   Stack,
-//   StackItem,
-//   MessageBar,
-//   MessageBarType,
-//   ChoiceGroup,
-//   IStackProps,
-// } from 'office-ui-fabric-react';
+import { Icon } from "@fluentui/react/lib/Icon";
+
+import { Accordion } from "./accordion/Accordion";
+import { Tabs } from "./tabs/Tabs";
 
 export interface Post {
   userId: number;
@@ -37,27 +30,12 @@ export interface UserListProps {
 
 export const UserList = (props: UserListProps) => {
   const { users, posts } = props;
-  const [ postsToRender, setPostsToRender ] = useState([]);
-  const [ message, setMessage ] = useState('');
+  const [ postsToRender, setPostsToRender ] = React.useState([]);
+  const [ message, setMessage ] = React.useState('');
 
   const getUserPosts = (userId: number): Post[] => {    
     return posts.filter((post) => post.userId === userId);
   }
-  
-  const listPosts = (userId: number) => { 
-    return getUserPosts(userId).map((item, index) => (
-      <li key={index}>
-        <span>{item.title}</span>
-      </li>
-    ));
-  };
-
-  const listUsers = users.map((item, index) => (
-    <li key={index}>
-      <span onClick={() => activeUser(item.id)}>{item.name}</span>
-      <ul>{listPosts(item.id)}</ul>
-    </li>
-  ));
 
   const activeUser = (userId: number) => {
     setPostsToRender(getUserPosts(userId));
@@ -81,22 +59,11 @@ export const UserList = (props: UserListProps) => {
 
         await context.sync();
 
-        // console.log('rowIndex', selected.rowIndex, 'columnIndex', selected.columnIndex);
-        // console.log('getPostKeys', getPostKeys());
-        // console.log('getPostKeys length', getPostKeys().length);
-        // console.log('postsToRender length', postsToRender.length);
-
         if (postsToRender.length <= 0) {
           setMessage('Please select user first');
         } else {
           let posts = postsToRender.map(Object.values);
           posts.unshift(getPostKeys());
-          // console.log('posts');
-          // console.log(posts);
-          // const values = [].push(posts);
-
-          // console.log('values');
-          // console.log(values);
 
           // Get active sheet.
           let sheet = context.workbook.worksheets.getActiveWorksheet();
@@ -121,14 +88,39 @@ export const UserList = (props: UserListProps) => {
   };
 
   return (
-    <main>
-      <MessageBar>{message}</MessageBar>
+    <main className="users-panel">
+      {/* action bar */}
+      <div className="users-panel__action-bar flex">
+        <div className="left-panel"></div>
+        <div className="right-panel">
+          <Icon iconName="Play" className="play-button" onClick={play} />          
+        </div>
+      </div>
 
-      <button onClick={play}>
-        Play
-      </button>
-      
-      <ul>{listUsers}</ul>
+      {/* panel content */}
+      <section className="users-panel__content flex">
+        <div className="left-panel">
+          <div className="users-panel__tabs">
+            <Tabs />
+          </div>
+        </div>
+        <div className="right-panel">
+          {message && (<MessageBar>{message}</MessageBar>)}
+
+          {/* panel header */}
+          <header className="users-panel__header">Posts</header>
+
+          {/* content accordion */}          
+          <div className="users-panel__accordion">
+            <div className="users-panel__model-bar">
+              <div className="users-panel__model-bar__icon">                
+                <Icon iconName="SearchData" />
+              </div>
+            </div>
+            <Accordion users={users} posts={posts} setUser={activeUser} />
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

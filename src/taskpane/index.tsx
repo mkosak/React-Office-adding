@@ -10,7 +10,7 @@ initializeIcons();
 
 let isOfficeInitialized = false;
 
-const title = "Flatworld Add-in";
+const title = "eyko";
 
 const render = Component => {
   ReactDOM.render(

@@ -6,7 +6,10 @@ import API from "./../utils/API";
 import { Spinner, SpinnerType } from "office-ui-fabric-react";
 import { MainHeader } from "./MainHeader";
 import { UserList, User, Post } from "./UserList";
+import { SidePanel } from "./SidePanel";
 import Progress from "./Progress";
+
+import './styles/app.css';
 
 /* global Button, console, Excel, Header, UserList, User, Progress */
 
@@ -47,8 +50,12 @@ export default class App extends React.Component<AppProps, AppState> {
       this.setState({ users: users });
       this.setState({ posts: posts });
 
-      // stop loading
-      this.setState({ isLoading: false });
+      // timeout is for visual purpose only, representing the loading state
+      setTimeout(() => {
+        // stop loading
+        this.setState({ isLoading: false });
+      }, 22500); // this is a magic number yes :), please reade above
+
     }).catch(errors => {
       // show on errors.
       console.log(errors);
@@ -66,13 +73,22 @@ export default class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <section>
-        <MainHeader title={this.props.title} />
+      <section className="app flex">
+        {isLoading && (
+          <div className="app__spinner flex flex--centered">
+            <Spinner type={SpinnerType.large} label="Loading..." />
+          </div>
+        )}
         
-        {isLoading && (<Spinner type={SpinnerType.large} label="Loading..." />)}
-
         {!isLoading && (
-          <UserList users={users} posts={posts}></UserList>
+          <>
+              <div className="panel-wrapper">
+                <MainHeader title={this.props.title} />            
+                <UserList users={users} posts={posts}></UserList>
+              </div>
+
+              <SidePanel />
+          </>
         )}
       </section>
     );
