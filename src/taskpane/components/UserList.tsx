@@ -141,7 +141,11 @@ export const UserList = (props: UserListProps) => {
                 <Icon iconName="SearchData" />
               </div>
             </div>
-            <Accordion users={users} posts={posts} setUser={activeUser} />
+            <Accordion 
+              users={users} 
+              posts={posts} 
+              setUser={activeUser} 
+              getUserPosts={getUserPosts} />
           </div>
         </div>
       </section>

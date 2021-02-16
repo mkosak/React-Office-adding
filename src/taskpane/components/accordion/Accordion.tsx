@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
-import { Post } from "../UserList";
 import { Icon } from "office-ui-fabric-react";
+import { Post } from '../UserList';
 
 import "./accordion.css";
 
@@ -9,18 +9,17 @@ export interface AccordionProps {
   users: any[];
   posts: any[];
   setUser: (userId: number) => void;
+  getUserPosts: (userId: number) => Post[];
 }
 
 export const Accordion = (props: AccordionProps) => {
-  const { users, posts, setUser } = props;
+  const { users, setUser, getUserPosts } = props;
   const [ active, setActive ] = React.useState(null);
-
-  const getUserPosts = (userId: number): Post[] => {    
-    return posts.filter((post) => post.userId === userId);
-  }
-  
+   
   const listPosts = (userId: number) => { 
-    return getUserPosts(userId).map((item, index) => (
+    const posts = getUserPosts(userId);
+
+    return posts.map((item, index) => (
       <div className="accordion-sub-item" key={item.id}>
         <div className="accordion-sub-item__index">{index + 1}</div>
         <div className="accordion-sub-item__line">
