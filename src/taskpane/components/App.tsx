@@ -9,7 +9,7 @@ import { UserList, User, Post } from "./UserList";
 import { SidePanel } from "./SidePanel";
 import Progress from "./Progress";
 
-import './../styles/app.css';
+import "./../styles/app.css";
 
 /* global Button, console, Excel, Header, UserList, User, Progress */
 
@@ -68,7 +68,7 @@ export default class App extends React.Component<AppProps, AppState> {
 
     if (!isOfficeInitialized) {
       return (
-        <Progress title={title} logo="assets/logo-filled.png" message="Please sideload your addin to see app body." />
+        <Progress title={title} message="Please sideload your addin to see app body." />
       );
     }
 

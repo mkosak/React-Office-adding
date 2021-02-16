@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { MessageBar } from "office-ui-fabric-react";
-import { Icon } from "@fluentui/react/lib/Icon";
+import * as React from "react";
+import { MessageBar, Icon} from "office-ui-fabric-react";
 
 import { Accordion } from "./accordion/Accordion";
 import { Tabs } from "./tabs/Tabs";
@@ -33,36 +32,58 @@ export const UserList = (props: UserListProps) => {
   const [ postsToRender, setPostsToRender ] = React.useState([]);
   const [ message, setMessage ] = React.useState('');
 
+  /**
+   * Retrieve user's posts from the props
+   * @method getUserPosts
+   * @param {userId} number - user id
+   */
   const getUserPosts = (userId: number): Post[] => {    
     return posts.filter((post) => post.userId === userId);
   }
 
+  /**
+   * Set active user posts to the state for future render
+   * @method activeUser
+   * @param {userId} number - user id
+   */
   const activeUser = (userId: number) => {
     setPostsToRender(getUserPosts(userId));
   };
 
+  /**
+   * Get posts keys, like ["id", "userId", ...]
+   * @method getPostKeys
+   */
   const getPostKeys = () => {
     const { posts } = props;
-
     if (!posts && !posts.length) return null;
 
     return Object.keys(posts[0]);
   }
 
+  /**
+   * Play add-in render function
+   * @method play
+   */
   const play = async () => {
     try {
       await Excel.run(async context => {
+        // get selected range
         const selected = context.workbook.getSelectedRange();
-
+        
         // get selected cell indexes
         selected.load(['rowIndex', 'columnIndex']);
 
         await context.sync();
 
+        // continue if user posts selected
         if (postsToRender.length <= 0) {
           setMessage('Please select user first');
         } else {
+          // get values as array or values array, like [[ "id", "userId", ...]]
           let posts = postsToRender.map(Object.values);
+
+          // add post keys at the begining of the array (this will be the table header)
           posts.unshift(getPostKeys());
 
           // Get active sheet.
@@ -77,7 +98,10 @@ export const UserList = (props: UserListProps) => {
           // Create a table from the range.
           let userPostsTable = sheet.tables.add(tableRange, true);
 
+          // Give table a name
           userPostsTable.name = "PostsTable";
+
+          setMessage('');
         }
 
         await context.sync();

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Icon } from "@fluentui/react/lib/Icon";
+import * as React from "react";
+import { Icon } from "office-ui-fabric-react";
 
 export const Tabs = () => {
   return (

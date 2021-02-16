@@ -1,9 +1,9 @@
-import * as React from 'react';
-import classNames from 'classnames';
-import { Post } from '../UserList';
-import { Icon } from "@fluentui/react/lib/Icon";
+import * as React from "react";
+import classNames from "classnames";
+import { Post } from "../UserList";
+import { Icon } from "office-ui-fabric-react";
 
-import './accordion.css';
+import "./accordion.css";
 
 export interface AccordionProps {
   users: any[];
@@ -13,7 +13,7 @@ export interface AccordionProps {
 
 export const Accordion = (props: AccordionProps) => {
   const { users, posts, setUser } = props;
-  const [ active, setActive ] = React.useState(1);
+  const [ active, setActive ] = React.useState(null);
 
   const getUserPosts = (userId: number): Post[] => {    
     return posts.filter((post) => post.userId === userId);

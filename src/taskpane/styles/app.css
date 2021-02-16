@@ -1,5 +1,6 @@
 .app {
   color: #323130;
+  height: 100%;
 }
 
 .app__spinner {
@@ -66,6 +67,7 @@
 }
 
 .users-panel {
+  height: 100%;
   background: #fff;
 }
 .users-panel__header {
@@ -84,6 +86,9 @@
   background: #E86013;
 }
 
+.users-panel__content {
+  height: 100%;
+}
 .users-panel__content .left-panel {
   background: #F9D7C4;
 }
